@@ -12,7 +12,7 @@
       </nav>
       <span>Total payable amount: <span id="amount">$900.00</span> USD</span>
     </div>
-    <hr>
+    <hr class="line">
     <router-view />
   </div>
 </template>
@@ -42,7 +42,7 @@ nav {
   margin: 0 0 0 100px
 }
 
-hr {
+.line {
   width: 1195px;
   height: 1px;
   color: #c6c2de;
