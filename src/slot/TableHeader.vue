@@ -340,7 +340,7 @@ export default {
     }
     .table {
         height: 60px;
-        width: 1000px;
+        width: 1190px;
     }
     thead tr, tbody tr {
         margin: auto;
