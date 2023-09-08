@@ -1,23 +1,34 @@
 import Vue from "vue";
 import VueRouter from "vue-router";
-import HomeView from "../views/HomeView.vue";
+
+import AllView from "../views/AllView.vue";
+import PaidView from "../views/PaidView.vue";
+import UnpaidView from "../views/UnpaidView.vue";
+import OverdueView from "../views/OverdueView.vue";
 
 Vue.use(VueRouter);
 
 const routes = [
+  { path: "/", redirect: { path: "/all_services" } },
   {
-    path: "/",
-    name: "home",
-    component: HomeView,
+    path: "/all_services",
+    name: "all",
+    component: AllView,
   },
   {
-    path: "/about",
-    name: "about",
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () =>
-      import(/* webpackChunkName: "about" */ "../views/AboutView.vue"),
+    path: "/paid_services",
+    name: "paid",
+    component: PaidView,
+  },
+  {
+    path: "/unpaid_services",
+    name: "unpaid",
+    component: UnpaidView,
+  },
+  {
+    path: "/overdue_services",
+    name: "overdue",
+    component: OverdueView,
   },
 ];
 
