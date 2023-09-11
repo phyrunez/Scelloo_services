@@ -38,8 +38,8 @@
                             />
                         </div>
                     </div>
-                    <div class="">
-                        <b-button class="w-150 pay_dues">PAY DUES</b-button>
+                    <div>
+                        <b-button @click="handleSelected" class="w-150 pay_dues">PAY DUES</b-button>
                     </div>
                 </div>
             </slot>
@@ -49,23 +49,29 @@
                         <thead class="thead-light">
                             <tr class="table_heading">
                                 <th scope="col">
-                                    <input type="checkbox" width="100px" height="100px" name="" id="checkbox">
+                                    <input type="checkbox" width="100px" height="100px" name="" class="checkbox">
                                 </th>
                                 <th class="tick"></th>
                                 <th scope="col">NAME</th>
-                                <th scope="col">USER STATUS</th>
+                                   <th scope="col">USER STATUS</th>
                                 <th scope="col" class="align-right">PAYMENT STATUS</th>
                                 <th scope="col">AMOUNT</th>
                                 <th class="tick_two"></th>
                                 <th scope="col">
-                                    <b-icon icon="three-dots-vertical" animation="cylon-vertical" font-scale="2"></b-icon>
+                                    <b-icon icon="three-dots-vertical" class="header_dot" animation="cylon-vertical" font-scale="1.5"></b-icon>
                                 </th>
                             </tr>
                         </thead>
-                        <tbody>
-                            <tr v-for="item in items" :key="item.id" role="button" :class="{ seleted_checkbox : !checkboxValue }" class="table_data accordion-toggle" data-toggle="collapse" data-target="#demo1">
+                        <tbody v-for="item in items" :key="item.id">
+                            <tr role="button" @click="toggle(item.id)" class="table_data accordion-toggle" data-toggle="collapse" data-target="#demo1">
                                 <th scope="col" class="data_th">
-                                    <input type="checkbox" width="100px" height="100px" v-model="checkboxValue" id="checkbox">
+                                    <span class="checked" :class="{ 'checked': item.mark_paid }"></span>
+                                    <input 
+                                        type="checkbox" 
+                                        v-model="item.mark_paid"
+                                        :checked="item.mark_paid"
+                                        class="checkbox checked"
+                                    />
                                 </th>
                                 <td class="tick_td"><span class="tick"><b-icon icon="check-circle"></b-icon></span></td>
                                 <td>
@@ -88,6 +94,13 @@
                                         <div class="payment_status_div">
                                             <b-icon icon="dot" class="payment_status" font-scale="1"></b-icon>
                                             <span>{{ item.paymentStatus.status_tag }}</span>
+                                        </div>
+                                        <p class="user_paid">Paid on {{ item.paymentStatus.paid_on }}</p>
+                                    </div>
+                                    <div v-else-if="item.mark_paid">
+                                        <div class="payment_status_div">
+                                            <b-icon icon="dot" class="payment_status" font-scale="1"></b-icon>
+                                            <span>Paid</span>
                                         </div>
                                         <p class="user_paid">Paid on {{ item.paymentStatus.paid_on }}</p>
                                     </div>
@@ -115,18 +128,26 @@
                                 <td class="view_td"><span class="view">View More</span></td>
                                 <td>
                                     <div>
-                                        <b-icon v-if="!viewMoreDropdown" icon="three-dots-vertical" id="tooltip-target-1" v-on:click="toggleViewMoreDropdown" class="mt-2" font-scale="2"></b-icon>
-                                        <div v-else class="view_more_dropdown">
-                                            <h2>I am here</h2>
-                                        </div>
+                                        <b-dropdown id="dropdown-1" text="Dropdown Button" variant="outline" class="m-md-2" no-caret>
+                                            <template #button-content>
+                                                <b-icon icon="three-dots-vertical" id="tooltip-target-1" v-on:click="toggleViewMoreDropdown" font-scale="1"></b-icon>
+                                            </template>
+                                            <b-dropdown-item class="default_css">Edit</b-dropdown-item>
+                                            <b-dropdown-item class="default_css">View Profile</b-dropdown-item>
+                                            <b-dropdown-item variant="success" class="activate">Activate User</b-dropdown-item>
+                                            <b-dropdown-divider></b-dropdown-divider>
+                                            <b-dropdown-item variant="danger" class="deleted">Delete</b-dropdown-item>
+                                            <span class="cancel_drop"><b-icon icon="x"></b-icon></span>
+                                        </b-dropdown>
+
                                         <b-tooltip target="tooltip-target-1" triggers="hover" placement="right">
                                             I am tooltip <b>component</b> content!
                                         </b-tooltip>
                                     </div>
                                 </td>
                             </tr>
-                            <tr class="accordian-body collapse" id="demo1">
-                                <td colspan="12" class="hiddenRow">
+                            <tr v-if="opened.includes(item.id)" class="accordian-body collapse" id="demo1">
+                                <td colspan="2" class="hiddenRow">
 							        <div> 
                                         <table class="table table-striped">
                                             <thead>
@@ -149,11 +170,8 @@
                	                        </table>
                                     </div> 
                                 </td>
-                            </tr>	
+                            </tr>
                         </tbody>
-                        <div scope="row" class="paginated_div flex flex-end">
-                            <p>chaii</p>
-                        </div>
                	    </table>
                 </div> 
             </slot>
@@ -173,8 +191,10 @@ export default {
             filterDropdown: false,
             search: "",
             viewMoreDropdown: false,
+            opened: [],
             noRecord: false,
-            checkboxValue: false,
+            checked: false,
+            tableDrop: false,
             sortBy: ["Default", "First Name", "Last Name", "Due Date", "Last Login"],
             users: ["All", "Active", "Inactive"],
             user_status: "Active",
@@ -187,6 +207,7 @@ export default {
         if(this.search === "") return this.defaultItems
     },
     mounted: function() {
+        this.searchHandler
         console.log(this.data)
     },
     methods: {
@@ -195,21 +216,31 @@ export default {
         },
         toggleViewMoreDropdown() {
             return this.viewMoreDropdown = !this.viewMoreDropdown
+        },
+        handleSelected() {
+            console.log('Working')
+            this.checked = true
+        },
+        toggle(id) {
+            console.log("display")
+            const index = this.opened.indexOf(id);
+            if (index > -1) {
+                this.opened.splice(index, 1)
+            } else {
+                this.opened.push(id)
+
+            }
         }
     },
+    
     computed: {
         searchHandler() {
-            // const compare = (a, b) => {
-            //     if(a.name < b.name) return -1;
-            //     if(a.name > b.name) return 1;
-
-            //     return 0
-            // }
+    
             let filteredServices = this.items.filter(item => {
                 return item.first_name.toLowerCase().indexOf(this.search.toLowerCase()) !== -1
             })
             console.log(filteredServices)           
-            // filteredServices.sort(compare)
+            
             this.items = filteredServices
             if(this.search === "") return this.items = this.defaultItems
         }
@@ -230,9 +261,7 @@ export default {
     }
     .paginated_div {
         background: #c6c2de !important;
-        /* border-bottom-color: white; */
         float: right !important;
-        /* width: 100%; */
         border: none !important;
         height: 45px;
         margin: 0px;
@@ -245,6 +274,49 @@ export default {
         margin: auto !important;
         padding: auto !important;
         padding: 5px 0;
+    }
+    .header_dot {
+        margin-left: 20px !important;
+    }
+    .checked {
+        background: #6d5bd0 !important;
+        cursor: pointer;
+        color: #fff;
+    }
+    .checked::before {
+        content: "|";
+        margin-left: -10px !important;
+        max-width: 10px !important;
+    }
+    #dropdown-1 {
+        height: 10px !important;
+        width: 13px !important;
+        margin-left: 180px;
+    }
+    .dropdown-menu {
+        border: none !important;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        /* position: relative !important; */
+    }
+    .default_css,
+    .activate, .deleted {
+        font-family: Inter !important;
+        font-size: 14px !important;
+        font-weight: 400 !important;
+        line-height: 17px !important;
+        letter-spacing: 0.05em !important;
+        text-align: left !important;
+    }
+    .cancel_drop {
+        border-radius: 50%;
+        width: 20px;
+        height: 20px;
+        padding-top: -5px !important;
+        top: 0 !important;
+        right: 0 !important;
+        margin: -13px -8px 0 10px !important;
+        position: absolute !important;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.2);
     }
     .funnel {
         padding: 5px 10px 5px 10px !important;
@@ -371,7 +443,7 @@ export default {
         background-color:#F4F2FF !important;
         width: 100%;
     }
-    #checkbox {
+    .checkbox {
         height: 18px;
         width: 18px;
         padding: 15px 0 0 0 
@@ -390,20 +462,27 @@ export default {
     .bi-three-dots-vertical {
         color: #6E6893;
     }
-    .bi-three-dots-vertical {
+    /* .bi-three-dots-vertical {
         position: relative;
-    }
+    } */
     .view_more_dropdown {
-        border: 1px solid #6d5bd0;
-        border-radius: 10px;
+        width: 154px;
+        height: 129px;
+        top: 12px;
+        left: 15px;
         box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-        width: 200px;
-        z-index: 5;
-        background: white;
-        padding: 20px 0 10px 0;
+        z-index: -5 !important;
+    }
+    
+    .view_more_dropdown ul li a {
+        font-family: "Inter", sans-serif;
+        font-size: 14px;
+        font-weight: 400;
+        line-height: 17px;
+        letter-spacing: 0.05em;
+        padding: 3px 0;
+        text-align: left;
         
-        position: relative;
-        margin-top: 56px;
     }
     .bi-three-dots-vertical:hover {
         transition: ease-in-out;

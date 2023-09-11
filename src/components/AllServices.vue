@@ -1,10 +1,10 @@
-<template>
+<template data-app>
     <TableHeader :data=data />
 </template>
 
 <script>
 import TableHeader from "../slot/TableHeader.vue";
-import userData from "@/data/data"
+// import userData from "@/data/data"
 
 export default {
     components: {
@@ -12,8 +12,11 @@ export default {
     },
     data() {
         return {
-            data: userData
+            data: []
         }
+    },
+    created() {
+        this.data = this.$store.state.data
     },
 }
 </script>

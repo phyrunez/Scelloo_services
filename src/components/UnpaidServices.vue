@@ -4,7 +4,6 @@
 
 <script>
 import TableHeader from "../slot/TableHeader.vue";
-import userData from "@/data/data"
 
 export default {
     components: {
@@ -13,12 +12,11 @@ export default {
     data() {
         return {
             data: [],
-            userData: userData
         }
     },
     methods: {
         unpaidData() {
-            this.userData.map(d => {
+            this.$store.state.data.map(d => {
                 if(d.paymentStatus.status_tag === 'Unpaid') {
                     return this.data.push(d)
                 }

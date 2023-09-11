@@ -12,10 +12,24 @@
       </nav>
       <span>Total payable amount: <span id="amount">$900.00</span> USD</span>
     </div>
-    <hr class="line">
+    <hr class="line" />
     <router-view />
   </div>
 </template>
+
+<script>
+export default {
+  data() {
+    return {
+      amountTotalArr: ""
+    }
+  },
+  created() {
+    this.amountTotalArr = this.$store.getters.paidTotalAmountResult
+    console.log(this.amountTotalArr)
+  },
+}
+</script>
 
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
@@ -43,9 +57,9 @@ nav {
 }
 
 .line {
-  width: 1195px;
-  height: 1px;
-  color: #c6c2de;
+  width: 1195px !important;
+  height: 1px !important;
+  background: #c6c2de !important;
   margin: 5px 0 0 100px !important;
 }
 

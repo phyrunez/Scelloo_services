@@ -14,6 +14,7 @@ const userData = [
         },
         amount: "890",
         currency: "USD",
+        mark_paid: false,
         detailsData: [
             {
                 date: "12/APR/2023",
@@ -254,6 +255,29 @@ const userData = [
                 user_activity: "lorem20",
                 user_detail: "lorem30"
             },
+            {
+                date: "12/APR/2023",
+                user_activity: "lorem20",
+                user_detail: "lorem30"
+            },
+        ]
+    },
+    {
+        id: "11",
+        first_name: "Ezichi",
+        last_name: "Gift",
+        email: "ezichigift@gmail.com",
+        userStatus: {
+            status_tag: "Inactive",
+            last_login: "14/APR/2023"
+        },
+        paymentStatus: {
+            status_tag: "Unpaid",
+            paid_on: "15/MAY/2023"
+        },
+        amount: "100",
+        currency: "USD",
+        detailsData: [
             {
                 date: "12/APR/2023",
                 user_activity: "lorem20",
